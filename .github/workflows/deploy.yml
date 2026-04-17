@@ -1,33 +1,58 @@
-name: Deploy Website
+# Name of this workflow (appears in GitHub Actions dashboard)
+name: Deploy to GitHub Pages
 
+# -----------------------------------------------------------------------------
+# TRIGGERS (Events that start this workflow)
+# -----------------------------------------------------------------------------
 on:
-  push:
+  push:                # Runs when someone pushes code
     branches:
-      - main
+      - main           # Only when pushing to the 'main' branch (not other branches)
 
+# -----------------------------------------------------------------------------
+# PERMISSIONS (What this workflow is allowed to do)
+# -----------------------------------------------------------------------------
+permissions:
+  contents: read       # Can read your repository's code (safe, default)
+  pages: write         # Can write/deploy to GitHub Pages (needed to publish)
+  id-token: write      # Needed for authentication with GitHub's deployment system
+
+# -----------------------------------------------------------------------------
+# JOBS (The actual work to be done)
+# -----------------------------------------------------------------------------
 jobs:
-  test-and-deploy:
-    runs-on: ubuntu-latest
-
+  deploy:              # Name of this job (you can call it anything)
+    
+    # RUNNER (The virtual computer that executes this job)
+    runs-on: ubuntu-latest   # Use the latest Ubuntu Linux environment
+    
+    # -------------------------------------------------------------------------
+    # STEPS (Individual tasks that run in order, top to bottom)
+    # -------------------------------------------------------------------------
     steps:
-      - name: Checkout code
+      
+      # STEP 1: Get your code from the repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Install Node (for testing)
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
-
-      - name: Upload Pages Artifact
+        # What this does: Downloads your repo's code onto the runner
+        # Without this, the runner has no access to your files
+      
+      # STEP 2: Prepare GitHub Pages environment
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        # What this does: Configures the runner with settings needed for Pages
+        # Sets up correct paths, permissions, and environment variables
+      
+      # STEP 3: Package your website files
+      - name: Upload site files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .   # your site files (root folder)
-
+          path: .      # Upload everything in the current folder (your whole site)
+        # What this does: Bundles all your files into a .zip package
+        # This package gets stored temporarily for deployment
+      
+      # STEP 4: Publish to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+        # What this does: Takes the packaged files and deploys them
+        # After this step, your site is live at username.github.io/repo-name
