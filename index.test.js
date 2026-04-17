@@ -1,18 +1,16 @@
 const fs = require("fs");
-const { JSDOM } = require("jsdom");
 
-test("HTML has a title", () => {
+test("HTML file exists", () => {
   const html = fs.readFileSync("index.html", "utf8");
-  const dom = new JSDOM(html);
-
-  const title = dom.window.document.querySelector("title");
-  expect(title).not.toBeNull();
+  expect(html).toBeDefined();
 });
 
-test("Page has a main heading", () => {
+test("HTML contains title tag", () => {
   const html = fs.readFileSync("index.html", "utf8");
-  const dom = new JSDOM(html);
+  expect(html.includes("<title>")).toBe(true);
+});
 
-  const h1 = dom.window.document.querySelector("h1");
-  expect(h1).not.toBeNull();
+test("HTML contains h1 heading", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  expect(html.includes("<h1>")).toBe(true);
 });
